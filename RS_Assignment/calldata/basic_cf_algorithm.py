@@ -13,33 +13,28 @@ class Basic_CF_Algorithm:
         predicted_rating = np.array([[0.0 for col in range(500)] for row in range(500)])
     
         #평균 & 표준편차 - 0값은 NaN값으로 변환
-        mean_u = np.nanmean(np.where(self != 0, self, np.nan), axis = 1) #user
-        mean_i = np.nanmean(np.where(self != 0, self, np.nan), axis = 0) #item
-        mean = np.nanmean(np.where(self != 0, self, np.nan)) #all mean
+        mean_u = np.nanmean(np.where(self.pre_MovieLens != 0, self.pre_MovieLens, np.nan), axis = 1) #user
+        mean_i = np.nanmean(np.where(self.pre_MovieLens != 0, self.pre_MovieLens, np.nan), axis = 0) #item
+        mean = np.nanmean(np.where(self.pre_MovieLens != 0, self.pre_MovieLens, np.nan)) #all mean
     
         #baseline
         b_u = mean_u - mean #user
         b_i = mean_i - mean #item
     
         #Similarty 불러오기
-        if(sim == 'COS'):
-            Sim = Similarity_MovieLens.COS()
-        elif(sim == 'JAC'):
-            Sim = Similarity_MovieLens.JAC()
-        elif(sim == 'MSD'):
-            Sim = Similarity_MovieLens.MSD()
+        Sim=sim
     
         #상위 K명 구하기
         k_neighbors = np.argsort(-Sim) 
         k_neighbors = np.delete(k_neighbors, np.s_[k:], 1) #k개만 남기고 삭제
     
-        NumUsers = np.size(self, axis = 0) #user size
-        NumItems = np.size(self, axis = 1) #item size
+        NumUsers = np.size(self.pre_MovieLens, axis = 0) #user size
+        NumItems = np.size(self.pre_MovieLens, axis = 1) #item size
     
         for u in range(0, NumUsers):
             list_sim = Sim[u, k_neighbors[u]] #similarity list
             for i in range(0, NumItems):
-                list_rating = self[k_neighbors[u],i].astype('float64') #rating list
+                list_rating = self.pre_MovieLens[k_neighbors[u],i].astype('float64') #rating list
             
                 b_ui = mean + b_u[u] + b_i[i] #user u, item i
                 b_vi = mean + b_u[k_neighbors[u]] + b_i[i]
@@ -60,35 +55,32 @@ class Basic_CF_Algorithm:
         predicted_rating = np.array([[0.0 for col in range(500)] for row in range(500)])
         
         #평균 & 표준편차 - 0값은 NaN값으로 변환
-        mean_u = np.nanmean(np.where(self != 0, self, np.nan), axis = 1) #user
-        mean_i = np.nanmean(np.where(self != 0, self, np.nan), axis = 0) #item
-        mean = np.nanmean(np.where(self != 0, self, np.nan)) #all
+        mean_u = np.nanmean(np.where(self.pre_MovieLens != 0, self.pre_MovieLens, np.nan), axis = 1) #user
+        mean_i = np.nanmean(np.where(self.pre_MovieLens != 0, self.pre_MovieLens, np.nan), axis = 0) #item
+        mean = np.nanmean(np.where(self.pre_MovieLens != 0, self.pre_MovieLens, np.nan)) #all
         
         #baseline
         b_u = mean_u - mean #user
         b_i = mean_i - mean #item
             
-        self = self.T
+        self.pre_MovieLens = (self.pre_MovieLens).T
+        
         #Similarty 불러오기
-        if(sim == 'COS'):
-            Sim = Similarity_MovieLens.COS()
-        elif(sim == 'JAC'):
-            Sim = Similarity_MovieLens.JAC()
-        elif(sim == 'MSD'):
-            Sim = Similarity_MovieLens.MSD()   
-        self = self.T
+        Sim=sim
+        
+        self.pre_MovieLens = (self.pre_MovieLens).T
         
         #상위 K명 구하기
         k_neighbors = np.argsort(-Sim) 
         k_neighbors = np.delete(k_neighbors, np.s_[k:], 1) #k개만 남기고 삭제
         
-        NumUsers = np.size(self, axis = 0) #user size
-        NumItems = np.size(self, axis = 1) #tiem size
+        NumUsers = np.size(self.pre_MovieLens, axis = 0) #user size
+        NumItems = np.size(self.pre_MovieLens, axis = 1) #tiem size
         
         for i in range(0, NumItems):
             list_sim = Sim[i, k_neighbors[i]] #similarity list
             for u in range(0, NumUsers):
-                list_rating = self[u,k_neighbors[i]].astype('float64') #rating list
+                list_rating = self.pre_MovieLens[u,k_neighbors[i]].astype('float64') #rating list
             
                 b_ui = mean + b_u[u] + b_i[i] #user u, item i
                 b_uj = mean + b_u[u] + b_i[k_neighbors[i]]
@@ -107,25 +99,20 @@ class Basic_CF_Algorithm:
         
         predicted_rating = np.array([[0.0 for col in range(500)] for row in range(500)])
     
-        mean=np.nanmean(np.where(self!=0,self,np.nan),axis=1)
+        mean=np.nanmean(np.where(self.pre_MovieLens!=0,self.pre_MovieLens,np.nan),axis=1)
         
-        if (sim=='COS'):
-            Sim=Similarity_MovieLens.COS()
-        elif(sim == 'JAC'):
-            Sim = Similarity_MovieLens.JAC()
-        elif(sim == 'MSD'):
-            Sim = Similarity_MovieLens.MSD()
+        Sim=sim
         
         k_neighbors=np.argsort(-Sim)
         k_neighbors=np.delete(k_neighbors,np.s_[k:],1) #k개만 남기고 삭제
         
-        NumUsers=np.size(self,axis=0) #user size
-        NumItems=np.size(self,axis=1) #item size
+        NumUsers=np.size(self.pre_MovieLens,axis=0) #user size
+        NumItems=np.size(self.pre_MovieLens,axis=1) #item size
         
         for u in range(0,NumUsers):
             list_sim=Sim[u,k_neighbors[u]]
             for i in range(0, NumItems):
-                list_rating=self[k_neighbors[u],i].astype('float64')
+                list_rating=self.pre_MovieLens[k_neighbors[u],i].astype('float64')
                 list_mean=mean[k_neighbors[u]]
             
                 denominator = np.sum(list_sim) #분모
@@ -142,25 +129,24 @@ class Basic_CF_Algorithm:
         
         predicted_rating = np.array([[0.0 for col in range(500)] for row in range(500)])
         
-        mean=np.nanmean(np.where(self!=0,self,np.nan),axis=0) #axis=0 item
+        mean=np.nanmean(np.where(self.pre_MovieLens!=0,self.pre_MovieLens,np.nan),axis=0) #axis=0 item
         
-        self = self.T
-        if (sim=='COS'):
-            Sim=Similarity_MovieLens.COS()
-        elif (sim=='PCC'):
-            Sim=Similarity_MovieLens.PCC()
-        self = self.T
+        self.pre_MovieLens = (self.pre_MovieLens).T
+        
+        Sim=sim
+        
+        self.pre_MovieLens = (self.pre_MovieLens).T
         
         k_neighbors=np.argsort(-Sim)
         k_neighbors=np.delete(k_neighbors,np.s_[k:],1) #k개만 남기고 삭제
         
-        NumUsers=np.size(self,axis=0) #user size
-        NumItems=np.size(self,axis=1) #item size
+        NumUsers=np.size(self.pre_MovieLens,axis=0) #user size
+        NumItems=np.size(self.pre_MovieLens,axis=1) #item size
         
         for i in range(0,NumItems):
             list_sim=Sim[i,k_neighbors[i]]
             for u in range(0, NumUsers):
-                list_rating=self[u,k_neighbors[i]].astype('float64')
+                list_rating=self.pre_MovieLens[u,k_neighbors[i]].astype('float64')
                 list_mean=mean[k_neighbors[i]]
             
                 denominator = np.sum(list_sim) #분모
@@ -179,28 +165,23 @@ class Basic_CF_Algorithm:
         predicted_rating = np.array([[0.0 for col in range(500)] for row in range(500)])
         
         #평균 & 표준편차 - 0값은 NaN값으로 변환
-        mean = np.nanmean(np.where(self != 0, self, np.nan), axis = 1)
-        std = np.nanstd(np.where(self != 0, self, np.nan), axis = 1)
+        mean = np.nanmean(np.where(self.pre_MovieLens != 0, self.pre_MovieLens, np.nan), axis = 1)
+        std = np.nanstd(np.where(self.pre_MovieLens != 0, self.pre_MovieLens, np.nan), axis = 1)
         
         #Similarty 불러오기
-        if(sim == 'COS'):
-            Sim = Similarity_MovieLens.COS() 
-        elif(sim == 'JAC'):
-            Sim = Similarity_MovieLens.JAC()
-        elif(sim == 'MSD'):
-            Sim = Similarity_MovieLens.MSD()
+        Sim=sim
         
         #상위 K명 구하기
         k_neighbors = np.argsort(-Sim) 
         k_neighbors = np.delete(k_neighbors, np.s_[k:], 1) #k개만 남기고 삭제
 
-        NumUsers = np.size(self, axis = 0) #user size
-        NumItems = np.size(self, axis = 1) #item size
+        NumUsers = np.size(self.pre_MovieLens, axis = 0) #user size
+        NumItems = np.size(self.pre_MovieLens, axis = 1) #item size
         
         for u in range(0, NumUsers):
             list_sim = Sim[u, k_neighbors[u]] #similarity list
             for i in range (0, NumItems):
-                list_rating = self[k_neighbors[u],i].astype('float64') #rating list
+                list_rating = self.pre_MovieLens[k_neighbors[u],i].astype('float64') #rating list
                 list_mean = mean[k_neighbors[u]] #mean list
                 list_std = std[k_neighbors[u]] #std list
             
@@ -220,30 +201,27 @@ class Basic_CF_Algorithm:
         predicted_rating = np.array([[0.0 for col in range(500)] for row in range(500)])
         
         #평균 & 표준편차 - 0값은 NaN값으로 변환
-        mean = np.nanmean(np.where(self != 0, self, np.nan), axis = 0)
-        std = np.nanstd(np.where(self != 0, self, np.nan), axis = 0)
+        mean = np.nanmean(np.where(self.pre_MovieLens != 0, self.pre_MovieLens, np.nan), axis = 0)
+        std = np.nanstd(np.where(self.pre_MovieLens != 0, self.pre_MovieLens, np.nan), axis = 0)
         
-        self=self.T
+        self.pre_MovieLens=(self.pre_MovieLens).T
+        
         #Similarty 불러오기
-        if(sim == 'COS'):
-            Sim = Similarity_MovieLens.COS() 
-        elif(sim == 'JAC'):
-            Sim = Similarity_MovieLens.JAC()
-        elif(sim == 'MSD'):
-            Sim = Similarity_MovieLens.MSD()
-        self=self.T
+        Sim=sim
+        
+        self.pre_MovieLens=(self.pre_MovieLens).T
         
         #상위 K명 구하기
         k_neighbors = np.argsort(-Sim) 
         k_neighbors = np.delete(k_neighbors, np.s_[k:], 1) #k개만 남기고 삭제
 
-        NumUsers = np.size(self, axis = 0) #user size
-        NumItems = np.size(self, axis = 1) #item size
+        NumUsers = np.size(self.pre_MovieLens, axis = 0) #user size
+        NumItems = np.size(self.pre_MovieLens, axis = 1) #item size
         
         for i in range(0, NumItems):
             list_sim = Sim[i, k_neighbors[i]] #similarity list
             for u in range (0, NumUsers):
-                list_rating = self[u,k_neighbors[i]].astype('float64') #rating list
+                list_rating = self.pre_MovieLens[u,k_neighbors[i]].astype('float64') #rating list
                 list_mean = mean[k_neighbors[i]] #mean list
                 list_std = std[k_neighbors[i]] #std list
             
